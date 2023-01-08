@@ -8,11 +8,12 @@
   outputs = { self, nixpkgs, utils, naersk }:
     utils.lib.eachDefaultSystem (system:
       let
+        cargoToml = (builtins.fromTOML (builtins.readFile ./Cargo.toml));
         pkgs = import nixpkgs { inherit system; };
         naersk-lib = pkgs.callPackage naersk { };
       in
       {
-        npt = naersk-lib.buildPackage ./.;
+        packages.npt = naersk-lib.buildPackage ./.;
         defaultPackage = naersk-lib.buildPackage ./.;
         devShell = with pkgs; mkShell {
           buildInputs = [ cargo rustc rustfmt pre-commit rustPackages.clippy ];
