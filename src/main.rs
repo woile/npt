@@ -21,7 +21,7 @@ enum Commands {
         packages: Vec<Package>
     },
 
-    /// Update all or specific packaages
+    /// Update all or specific packages
     #[command(arg_required_else_help = true, alias="u")]
     Update {
         packages: Option<Vec<Package>>

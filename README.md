@@ -4,7 +4,10 @@
 
 A (humble) successor to linux's `apt`, which makes life easier when using [nix](https://nixos.org/) as a package manager.
 
-This is a tool I'm using in my nix journey.
+This is a tool I'm using in my nix journey, it's supposed to make the transition from other
+package managers to nix.
+
+It is not production ready, but you can play with it.
 
 ## Requirements
 
@@ -25,7 +28,7 @@ Usage: npt <COMMAND>
 
 Commands:
   install  Install packages for the profile, if no repository provided, it defaults to nixpkgs
-  update   Update all or specific packaages
+  update   Update all or specific packages
   search   Find a package in the registry, if no repository provided, it defaults to nixpkgs
   remove   Remove one or more packages
   shell    Open a shell with the given packages
