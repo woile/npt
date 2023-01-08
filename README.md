@@ -19,6 +19,12 @@ Make sure you have installed [nix the package manager](https://nixos.org/downloa
 - Good and ituitive UX
 - Learn nix while using, this can display the commands executed.
 
+## Installation
+
+```sh
+nix profile install github:woile/npt#npt
+```
+
 ## Usage
 
 ```$ npt --help
