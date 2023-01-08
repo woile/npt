@@ -4,10 +4,12 @@
 
 A (humble) successor to linux's `apt`, which makes life easier when using [nix](https://nixos.org/) as a package manager.
 
-This is a tool I'm using in my nix journey, it's supposed to make the transition from other
+This is a tool I'm using in my nix journey, it's supposed to ease the transition from other
 package managers to nix.
 
-It is not production ready, but you can play with it.
+The idea is to use [nix profiles](https://nixos.org/manual/nix/stable/package-management/profiles.html) in the way you'd use `apt` or `brew`.
+
+It is a work in progress, but feel free to play with it.
 
 ## Requirements
 
@@ -17,12 +19,12 @@ Make sure you have installed [nix the package manager](https://nixos.org/downloa
 
 - Make it easy to transition from traditional package managers (`apt`, `brew`, `pacman`, etc)
 - Good and ituitive UX
-- Learn nix while using, this can display the commands executed.
+- Learn nix while using, this can display the commands executed (wip)
 
 ## Installation
 
 ```sh
-nix profile install 'github:woile/npt' --no-write-lock-file
+nix profile install 'github:woile/npt#npt'
 ```
 
 ## Usage
@@ -33,11 +35,11 @@ Nix Package Tool
 Usage: npt <COMMAND>
 
 Commands:
-  install  Install packages for the profile, if no repository provided, it defaults to nixpkgs
-  update   Update all or specific packages
-  search   Find a package in the registry, if no repository provided, it defaults to nixpkgs
-  remove   Remove one or more packages
-  shell    Open a shell with the given packages
+  install (i)  Install packages for the profile, if no repository provided, it defaults to nixpkgs
+  update (u)   Update all or specific packages
+  search (s)   Find a package in the registry, if no repository provided, it defaults to nixpkgs
+  remove (rm)  Remove one or more packages
+  shell (sh)    Open a shell with the given packages
   help     Print this message or the help of the given subcommand(s)
 
 Options:
