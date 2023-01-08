@@ -12,6 +12,7 @@
         naersk-lib = pkgs.callPackage naersk { };
       in
       {
+        npt = naersk-lib.buildPackage ./.;
         defaultPackage = naersk-lib.buildPackage ./.;
         devShell = with pkgs; mkShell {
           buildInputs = [ cargo rustc rustfmt pre-commit rustPackages.clippy ];
