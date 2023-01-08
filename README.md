@@ -22,7 +22,7 @@ Make sure you have installed [nix the package manager](https://nixos.org/downloa
 ## Installation
 
 ```sh
-nix profile install github:woile/npt
+nix profile install 'github:woile/npt' --no-write-lock-file
 ```
 
 ## Usage
@@ -50,3 +50,6 @@ Options:
 - [ ] implement `update` command
 - [ ] implement `shell` command
 - [ ] provide compiled tar's to speed up flakes
+
+## Contributing
+
