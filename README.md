@@ -22,7 +22,7 @@ Make sure you have installed [nix the package manager](https://nixos.org/downloa
 ## Installation
 
 ```sh
-nix profile install github:woile/npt#npt
+nix profile install github:woile/npt
 ```
 
 ## Usage

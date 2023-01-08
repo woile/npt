@@ -21,6 +21,10 @@ enum Commands {
         packages: Vec<Package>
     },
 
+    /// List installed packages
+    #[command(alias="ls")]
+    List,
+
     /// Update all or specific packages
     #[command(arg_required_else_help = true, alias="u")]
     Update {
@@ -244,6 +248,21 @@ fn main() {
         }
         Commands::Shell { packages } => todo!("sorry, not implemented yet"),
         Commands::Update { packages } => todo!("sorry, not implemented yet"),
+        Commands::List => {
+            let mut list_cmd = Command::new("nix");
+            list_cmd
+                .arg("profile")
+                .arg("list")
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .stdin(Stdio::null());
+            let output = list_cmd.output().expect("nix failed to run.");
+            if output.status.success() {
+                println!("{}", String::from_utf8_lossy(&output.stdout));
+            } else {
+                eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            }
+        },
     }
 }
 
