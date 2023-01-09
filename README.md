@@ -36,10 +36,9 @@ Usage: npt <COMMAND>
 
 Commands:
   install (i)  Install packages for the profile, if no repository provided, it defaults to nixpkgs
-  update (u)   Update all or specific packages
+  list (ls)    List installed packages
   search (s)   Find a package in the registry, if no repository provided, it defaults to nixpkgs
   remove (rm)  Remove one or more packages
-  shell (sh)    Open a shell with the given packages
   help     Print this message or the help of the given subcommand(s)
 
 Options:
@@ -49,8 +48,10 @@ Options:
 
 ## TODO
 
-- [ ] implement `update` command
-- [ ] implement `shell` command
+- [ ] Accept a package or expression in the List command
+- [ ] Improve help sections
+- [ ] Implement `update` command
+- [ ] Try to implement `shell` command
 - [ ] provide compiled tar's to speed up flakes
 
 ## Contributing

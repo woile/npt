@@ -3,7 +3,7 @@ use std::ffi::OsStr;
 use std::fmt::{Debug, Display};
 use std::io;
 
-use std::process::{exit, Child, ChildStdout, Command, Stdio};
+use std::process::{exit, Command, Stdio};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
@@ -15,35 +15,33 @@ struct Cli {
 #[derive(Debug, Subcommand)]
 enum Commands {
     /// Install packages for the profile, if no repository provided, it defaults to nixpkgs
-    #[command(arg_required_else_help = true, alias="i")]
+    #[command(arg_required_else_help = true, alias = "i")]
     Install {
         /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
-        packages: Vec<Package>
+        packages: Vec<Package>,
     },
 
     /// List installed packages
-    #[command(alias="ls")]
+    #[command(alias = "ls")]
     List,
 
     /// Update all or specific packages
-    #[command(arg_required_else_help = true, alias="u")]
-    Update {
-        packages: Option<Vec<Package>>
-    },
+    #[command(arg_required_else_help = true, alias = "u")]
+    Update { packages: Option<Vec<Package>> },
 
     /// Find a package in the registry, if no repository provided, it defaults to nixpkgs
-    #[command(arg_required_else_help = true, alias="s")]
+    #[command(arg_required_else_help = true, alias = "s")]
     Search {
         /// Regex used to find the package. Examples: `nixpkgs#gnome3` or `gnome3`
-        package: Package
+        package: Package,
     },
 
     /// Remove one or more packages
-    #[command(arg_required_else_help = true, alias="rm")]
+    #[command(arg_required_else_help = true, alias = "rm")]
     Remove { packages: Vec<Package> },
 
     /// Open a shell with the given packages
-    #[command(arg_required_else_help = true, alias="sh")]
+    #[command(arg_required_else_help = true, alias = "sh")]
     Shell { packages: Vec<Package> },
 }
 
@@ -149,11 +147,11 @@ fn main() {
             } else {
                 eprintln!("{}", String::from_utf8_lossy(&output.stderr));
             }
-
         }
         Commands::Search { package } => {
             let mut search_cmd = Command::new("nix");
-            search_cmd.arg("search")
+            search_cmd
+                .arg("search")
                 .arg(&package.fullname)
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
@@ -167,7 +165,7 @@ fn main() {
             } else {
                 eprintln!("{}", String::from_utf8_lossy(&output.stderr));
             }
-        },
+        }
         Commands::Remove { packages } => {
             let mut list_cmd = Command::new("nix");
             list_cmd
@@ -209,7 +207,7 @@ fn main() {
                 println!("{}\t\t{}", pkg.position, pkg.store_path);
             }
             println!("\nWhat do you want to do next?");
-            println!("Remove [a]ll, [n]one: ");
+            println!("Remove [a]ll, [n]one, or space separated positions [int]: ");
             // NEXT: Add by position[int], or by keep only [!int]
             // println!("Type your answer:");
             let mut buffer = String::new();
@@ -218,7 +216,9 @@ fn main() {
                 .read_line(&mut buffer)
                 .expect("Could not read user input");
 
-            match buffer.to_lowercase().trim() {
+            let option = buffer.to_lowercase();
+
+            match option.trim() {
                 "a" => {
                     println!("Removing all found packages...");
                     let positions = found_pkgs
@@ -241,7 +241,23 @@ fn main() {
                     exit(0);
                 }
                 _ => {
-                    eprintln!("Invalid option");
+                    let positions: Vec<String> = option
+                        .chars()
+                        .filter(|c| c.is_ascii_digit())
+                        .map(String::from)
+                        .collect();
+                    println!("Removing packages {}...", option);
+
+                    let mut cmd = Command::new("nix");
+                    cmd.arg("profile").arg("remove").args(&positions);
+
+                    let child = cmd.spawn().expect("nix command failed to run.");
+                    let output = child.wait_with_output().expect("Could not wait command");
+                    if output.status.success() {
+                        println!("{}", String::from_utf8_lossy(&output.stdout));
+                    } else {
+                        eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+                    }
                     exit(1);
                 }
             }
@@ -262,7 +278,7 @@ fn main() {
             } else {
                 eprintln!("{}", String::from_utf8_lossy(&output.stderr));
             }
-        },
+        }
     }
 }
 
