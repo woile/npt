@@ -39,10 +39,6 @@ enum Commands {
     /// Remove one or more packages
     #[command(arg_required_else_help = true, alias = "rm")]
     Remove { packages: Vec<Package> },
-
-    /// Open a shell with the given packages
-    #[command(arg_required_else_help = true, alias = "sh")]
-    Shell { packages: Vec<Package> },
 }
 
 /// Package can follow the format repo#name or just the name
@@ -262,7 +258,6 @@ fn main() {
                 }
             }
         }
-        Commands::Shell { packages } => todo!("sorry, not implemented yet"),
         Commands::Update { packages } => todo!("sorry, not implemented yet"),
         Commands::List => {
             let mut list_cmd = Command::new("nix");

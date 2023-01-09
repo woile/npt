@@ -53,7 +53,6 @@ Options:
 - [ ] Accept a package or expression in the List command
 - [ ] Improve help sections
 - [ ] Implement `update` command
-- [ ] Try to implement `shell` command
 - [ ] provide compiled tar's to speed up flakes
 
 ## Contributing
