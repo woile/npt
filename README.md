@@ -13,7 +13,9 @@ It is a work in progress, but feel free to play with it.
 
 ## Requirements
 
-Make sure you have installed [nix the package manager](https://nixos.org/download.html).
+- Install [nix the package manager](https://nixos.org/download.html)
+- [Enable flakes](https://nixos.wiki/wiki/Flakes#Enable_flakes)
+
 
 ## Goals
 
