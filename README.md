@@ -57,3 +57,6 @@ Options:
 
 ## Contributing
 
+```sh
+nix flake update
+```
