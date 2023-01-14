@@ -8,3 +8,4 @@ authors = ["Santiago Fraire Willemoës <santiwilly@gmail.com>"]
 
 [dependencies]
 clap = { version = "4.0.32", features = ["derive"] }
+indicatif = "0.17.2"

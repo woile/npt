@@ -1,9 +1,11 @@
 use clap::{Parser, Subcommand};
+use indicatif::{ProgressBar, ProgressStyle};
 use std::ffi::OsStr;
 use std::fmt::{Debug, Display};
-use std::io;
+use std::io::{self, BufRead, BufReader};
 
 use std::process::{exit, Command, Stdio};
+use std::time::Duration;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
@@ -123,8 +125,18 @@ fn main() {
         println!("\thttps://nixos.org/download.html");
         exit(1);
     }
+
+    let pb = ProgressBar::new_spinner();
+    pb.enable_steady_tick(Duration::from_millis(300));
+    pb.set_style(
+        ProgressStyle::with_template("{prefix:.bold.dim}{spinner} {wide_msg}")
+            .unwrap()
+            .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ "),
+    );
     match args.command {
         Commands::Install { packages } => {
+            println!("Installing package(s)...\n");
+
             let mut cmd = Command::new("nix");
             cmd.arg("profile")
                 .arg("install")
@@ -134,9 +146,22 @@ fn main() {
                 .stdin(Stdio::null());
             // let args = cmd.get_args();
 
-            let child = cmd.spawn().expect("nix command failed to run.");
-            let pkgs: Vec<String> = packages.into_iter().map(|p| p.into()).collect();
-            println!("Installing package(s)...\n  {}\n", pkgs.join("\n  "));
+            let mut child = cmd.spawn().expect("nix command failed to run.");
+            let pkgs = packages
+                .into_iter()
+                .map(|p| p.into())
+                .collect::<Vec<String>>()
+                .join(" ");
+            pb.set_message(pkgs.to_owned());
+            for line in BufReader::new(child.stderr.take().unwrap()).lines() {
+                let line = line.unwrap();
+                let stripped_line = line.trim();
+                if !stripped_line.is_empty() {
+                    pb.set_message(stripped_line.to_owned());
+                }
+                pb.tick();
+            }
+
             let output = child.wait_with_output().expect("Could not wait command");
             if output.status.success() {
                 println!("{}", String::from_utf8_lossy(&output.stdout));

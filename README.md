@@ -50,6 +50,8 @@ Options:
 
 ## TODO
 
+- [ ] How to make search accept a repo only?
+- [ ] How to make search accept a regex?
 - [ ] Accept a package or expression in the List command
 - [ ] Improve help sections
 - [ ] Implement `update` command
