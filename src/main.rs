@@ -4,6 +4,7 @@ use std::ffi::OsStr;
 use std::fmt::{Debug, Display};
 use std::io::{self, BufRead, BufReader};
 
+use regex;
 use std::process::{exit, Command, Stdio};
 use std::time::Duration;
 
@@ -28,8 +29,12 @@ enum Commands {
     List,
 
     /// Update all or specific packages
-    #[command(arg_required_else_help = true, alias = "u")]
-    Update { packages: Option<Vec<Package>> },
+    #[command(alias = "u")]
+    Upgrade,
+    // {
+        // /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
+        // packages: Option<Vec<Package>>
+    // },
 
     /// Find a package in the registry, if no repository provided, it defaults to nixpkgs
     #[command(arg_required_else_help = true, alias = "s")]
@@ -284,7 +289,54 @@ fn main() {
                 }
             }
         }
-        Commands::Update { packages } => todo!("sorry, not implemented yet"),
+        Commands::Upgrade => {
+            println!("Upgrading all packages...");
+            //# nix profile upgrade '.*'
+            // let items = packages.clone().map_or(vec![".*".to_string()], |pkgs| {
+            //     pkgs.iter()
+            //         .map(|pkg| {
+            //             let escapedrepo = regex::escape(&pkg.repo);
+            //             let escapedpkg = regex::escape(&pkg.name);
+            //             let regex = format!(".*{escapedrepo}.*{escapedpkg}.*");
+            //             return regex;
+            //         })
+            //         .collect::<Vec<String>>()
+            // });
+            let items = vec![".*".to_string()];
+            let mut child = Command::new("nix")
+                .arg("profile")
+                .arg("upgrade")
+                .args(&items)
+                .stdout(Stdio::piped())
+                .stderr(Stdio::piped())
+                .stdin(Stdio::null())
+                .spawn()
+                .expect("nix command failed to run.");
+
+            let pb = ProgressBar::new_spinner();
+            // let pkgs = packages
+            //     .map_or(vec![".*".to_string()], |pkgs| {
+            //         pkgs.into_iter().map(|p| p.into()).collect::<Vec<String>>()
+            //     })
+            //     .join(" ");
+            pb.enable_steady_tick(Duration::from_millis(300));
+            pb.set_style(spinner_style.clone());
+            // pb.set_message(pkgs.to_owned());
+            for line in BufReader::new(child.stderr.take().unwrap()).lines() {
+                let line = line.unwrap();
+                let stripped_line = line.trim();
+                if !stripped_line.is_empty() {
+                    pb.set_message(stripped_line.to_owned());
+                }
+                pb.tick();
+            }
+            let output = child.wait_with_output().expect("Could not wait command");
+            if output.status.success() {
+                println!("{}", String::from_utf8_lossy(&output.stdout));
+            } else {
+                eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+            }
+        }
         Commands::List => {
             let mut list_cmd = Command::new("nix");
             list_cmd
