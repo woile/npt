@@ -1,3 +1,9 @@
+## 0.2.1 (2023-01-15)
+
+### Fix
+
+- **install**: improve message dispaly
+
 ## 0.2.0 (2023-01-14)
 
 ### Feat
