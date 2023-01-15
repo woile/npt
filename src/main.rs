@@ -126,13 +126,10 @@ fn main() {
         exit(1);
     }
 
-    let pb = ProgressBar::new_spinner();
-    pb.enable_steady_tick(Duration::from_millis(300));
-    pb.set_style(
-        ProgressStyle::with_template("{prefix:.bold.dim}{spinner} {wide_msg}")
-            .unwrap()
-            .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ "),
-    );
+    let spinner_style = ProgressStyle::with_template("{prefix:.bold.dim}{spinner} {wide_msg}")
+        .unwrap()
+        .tick_chars("⠁⠂⠄⠠⠐⠈ ");
+
     match args.command {
         Commands::Install { packages } => {
             println!("Installing package(s)...\n");
@@ -152,6 +149,9 @@ fn main() {
                 .map(|p| p.into())
                 .collect::<Vec<String>>()
                 .join(" ");
+            let pb = ProgressBar::new_spinner();
+            pb.enable_steady_tick(Duration::from_millis(300));
+            pb.set_style(spinner_style.clone());
             pb.set_message(pkgs.to_owned());
             for line in BufReader::new(child.stderr.take().unwrap()).lines() {
                 let line = line.unwrap();
@@ -161,6 +161,7 @@ fn main() {
                 }
                 pb.tick();
             }
+            // pb.finish_with_message("done");
 
             let output = child.wait_with_output().expect("Could not wait command");
             if output.status.success() {
