@@ -20,7 +20,17 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
-    /// Install packages for the profile, if no repository provided, it defaults to nixpkgs
+    /// Install packages for the current profile
+    ///
+    /// If no repository provided, it defaults to nixpkgs
+    ///
+    /// In order to install a flake you need to provide the repository + package name,
+    /// separated by `#`.
+    ///
+    /// For example, to install `wpa_passphrase` from https://github.com/woile/wpa_passphrase_rs
+    ///
+    /// `npt i github:woile/wpa_passphrase_rs#wpa_passphrase`
+    ///
     #[command(arg_required_else_help = true, visible_alias = "i", )]
     Install {
         /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
