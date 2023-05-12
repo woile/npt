@@ -60,6 +60,12 @@ Options:
 
 ## Contributing
 
+1. Make changes
+2. Create a git commit
+3. Run
+
 ```sh
 nix flake update
 ```
+
+4. Create a git commit
