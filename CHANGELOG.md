@@ -1,3 +1,13 @@
+## 0.4.0 (2023-05-12)
+
+### Feat
+
+- add `--teacher` flag
+
+### Fix
+
+- show aliases in help
+
 ## 0.3.0 (2023-01-15)
 
 ### Feat
