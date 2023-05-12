@@ -16,6 +16,11 @@ It is a work in progress, but feel free to play with it.
 - Install [nix the package manager](https://nixos.org/download.html)
 - [Enable flakes](https://nixos.wiki/wiki/Flakes#Enable_flakes)
 
+Or just use the [nix installer](https://github.com/DeterminateSystems/nix-installer)
+
+```sh
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+```
 
 ## Goals
 
