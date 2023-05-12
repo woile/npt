@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use indicatif::{ProgressBar, ProgressStyle};
+use serde_json::Value;
 use std::borrow::Cow;
 use std::ffi::OsStr;
 use std::fmt::{Debug, Display};
@@ -31,7 +32,11 @@ enum Commands {
     ///
     /// `npt i github:woile/wpa_passphrase_rs#wpa_passphrase`
     ///
-    #[command(arg_required_else_help = true, visible_alias = "i", )]
+    /// You can also show the available packages in a flake, given you
+    /// end it with `#`
+    ///
+    /// `npt i github:nix-community/nurl#`
+    #[command(arg_required_else_help = true, visible_alias = "i")]
     Install {
         /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
         packages: Vec<Package>,
@@ -68,6 +73,12 @@ struct Package {
     fullname: String,
 }
 
+impl Package {
+    fn is_just_repo(&self) -> bool {
+        self.name.is_empty()
+    }
+}
+
 impl Display for Package {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.fullname)
@@ -77,7 +88,8 @@ impl Display for Package {
 impl<T: AsRef<str>> From<T> for Package {
     fn from(name: T) -> Self {
         let items: Vec<&str> = name.as_ref().split("#").collect();
-        if items.len() == 1 {
+        let is_just_repo = name.as_ref().trim().ends_with("#");
+        if items.len() == 1 && !is_just_repo {
             let name = items
                 .get(0)
                 .cloned()
@@ -87,6 +99,17 @@ impl<T: AsRef<str>> From<T> for Package {
                 repo: "nixpkgs".into(),
                 name: name.into(),
                 fullname: format!("nixpkgs#{name}"),
+            };
+        } else if is_just_repo {
+            let repo = items
+                .get(0)
+                .cloned()
+                .expect("Error while processing repository");
+
+            return Self {
+                repo: repo.into(),
+                name: String::new(),
+                fullname: format!("{repo}"),
             };
         }
 
@@ -118,6 +141,7 @@ impl AsRef<OsStr> for Package {
         &OsStr::new(&self.fullname)
     }
 }
+
 #[derive(Debug, Clone, PartialEq)]
 struct ListedPackage {
     position: String,
@@ -151,6 +175,55 @@ fn main() {
     match args.command {
         Commands::Install { packages } => {
             println!("Installing package(s)...\n");
+
+            let justrepos = Vec::from_iter(packages.iter().filter(|p| p.is_just_repo()).to_owned());
+
+            if justrepos.len() > 0 {
+                let mut cmd = Command::new("nix");
+                cmd.arg("eval")
+                    .arg("--impure")
+                    .arg("--raw")
+                    .arg("--expr")
+                    .arg("builtins.currentSystem")
+                    .stdout(Stdio::piped())
+                    .stderr(Stdio::piped())
+                    .stdin(Stdio::null());
+                let child = cmd.spawn().expect("nix command failed to run.");
+                let output = child.wait_with_output().expect("Could not wait command");
+                let arch = String::from_utf8_lossy(&output.stdout);
+
+                for package_repo in justrepos {
+                    let mut cmd = Command::new("nix");
+                    cmd.arg("flake")
+                        .arg("show")
+                        .args(&[&package_repo])
+                        .args(&["--json"])
+                        .stdout(Stdio::piped())
+                        .stderr(Stdio::piped())
+                        .stdin(Stdio::null());
+                    eprintln!("Available packages for '{package_repo}'\n");
+                    let child = cmd.spawn().expect("nix command failed to run.");
+                    let output = child.wait_with_output().expect("Could not wait command");
+
+                    let v: Value = serde_json::from_str(&String::from_utf8_lossy(&output.stdout))
+                        .expect("Could not parse");
+                    if output.status.success() {
+                        // let packages_for_arch = ];
+                        if let Value::Object(map) = &v["packages"][arch.as_ref()] {
+                            for (key, value) in map {
+                                println!("- {}: {}", key, value["name"]);
+                            }
+                        }
+                        println!("");
+                        // println!("V: {}", );
+                        // eprintln!("{}", String::from_utf8_lossy(&output.stdout));
+                    } else {
+                        eprintln!("{}", String::from_utf8_lossy(&output.stderr));
+                    }
+                }
+
+                exit(2);
+            }
 
             let mut cmd = Command::new("nix");
             cmd.arg("profile")

@@ -10,3 +10,4 @@ authors = ["Santiago Fraire Willemoës <santiwilly@gmail.com>"]
 clap = { version = "4.0.32", features = ["derive"] }
 indicatif = "0.17.2"
 regex = "1.7.1"
+serde_json = "1.0.96"
