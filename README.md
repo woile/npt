@@ -19,9 +19,9 @@ It is a work in progress, but feel free to play with it.
 
 ## Goals
 
-- Make it easy to transition from traditional package managers (`apt`, `brew`, `pacman`, etc)
-- Good and ituitive UX
-- Learn nix while using, this can display the commands executed (wip)
+- Help the transition from traditional package managers (`apt`, `brew`, `pacman`, etc) to nix
+- Good and intuitive UX
+- Learn nix while using, this can display the commands executed `npt --teacher install <package>`
 
 ## Installation
 
@@ -34,16 +34,18 @@ nix profile install 'github:woile/npt#npt'
 ```$ npt --help
 Nix Package Tool
 
-Usage: npt <COMMAND>
+Usage: npt [OPTIONS] <COMMAND>
 
 Commands:
-  install (i)  Install packages for the profile, if no repository provided, it defaults to nixpkgs
-  list (ls)    List installed packages
-  search (s)   Find a package in the registry, if no repository provided, it defaults to nixpkgs
-  remove (rm)  Remove one or more packages
+  install  Install packages for the profile, if no repository provided, it defaults to nixpkgs
+  list     List installed packages
+  upgrade  Update all or specific packages
+  search   Find a package in the registry, if no repository provided, it defaults to nixpkgs
+  remove   Remove one or more packages
   help     Print this message or the help of the given subcommand(s)
 
 Options:
+  -t, --teacher
   -h, --help     Print help information
   -V, --version  Print version information
 ```

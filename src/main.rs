@@ -1,16 +1,19 @@
 use clap::{Parser, Subcommand};
 use indicatif::{ProgressBar, ProgressStyle};
+use std::borrow::Cow;
 use std::ffi::OsStr;
 use std::fmt::{Debug, Display};
 use std::io::{self, BufRead, BufReader};
 
-use regex;
 use std::process::{exit, Command, Stdio};
 use std::time::Duration;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
 struct Cli {
+    #[clap(short, long, alias = "t")]
+    teacher: bool,
+
     #[command(subcommand)]
     command: Commands,
 }
@@ -18,7 +21,7 @@ struct Cli {
 #[derive(Debug, Subcommand)]
 enum Commands {
     /// Install packages for the profile, if no repository provided, it defaults to nixpkgs
-    #[command(arg_required_else_help = true, alias = "i")]
+    #[command(arg_required_else_help = true, alias = "i", )]
     Install {
         /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
         packages: Vec<Package>,
@@ -32,10 +35,9 @@ enum Commands {
     #[command(alias = "u")]
     Upgrade,
     // {
-        // /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
-        // packages: Option<Vec<Package>>
+    // /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
+    // packages: Option<Vec<Package>>
     // },
-
     /// Find a package in the registry, if no repository provided, it defaults to nixpkgs
     #[command(arg_required_else_help = true, alias = "s")]
     Search {
@@ -123,6 +125,7 @@ impl ListedPackage {
 
 fn main() {
     let args = Cli::parse();
+    let is_teacher = args.teacher;
     let cmd = Command::new("nix").arg("--version").output();
     if let Err(_) = cmd {
         println!("`nix` the package manager not found in your system.\n");
@@ -146,7 +149,13 @@ fn main() {
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
                 .stdin(Stdio::null());
-            // let args = cmd.get_args();
+
+            if is_teacher {
+                let string_cmd = command_as_string(&cmd);
+                println!("Learn mode on!");
+                println!("Nix command created:");
+                println!("\n\t{string_cmd}\n");
+            }
 
             let mut child = cmd.spawn().expect("nix command failed to run.");
             let pkgs = packages
@@ -166,7 +175,6 @@ fn main() {
                 }
                 pb.tick();
             }
-            // pb.finish_with_message("done");
 
             let output = child.wait_with_output().expect("Could not wait command");
             if output.status.success() {
@@ -176,16 +184,20 @@ fn main() {
             }
         }
         Commands::Search { package } => {
-            let mut search_cmd = Command::new("nix");
-            search_cmd
-                .arg("search")
+            let mut cmd = Command::new("nix");
+            cmd.arg("search")
                 .arg(&package.fullname)
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
                 .stdin(Stdio::null());
-            println!("cmd: {search_cmd:?}");
+            if is_teacher {
+                let string_cmd = command_as_string(&cmd);
+                println!("Learn mode on!");
+                println!("Nix command created:");
+                println!("\n\t{string_cmd}\n");
+            }
             println!("Searching for the package `{}`...\n", &package);
-            let child = search_cmd.spawn().expect("nix command failed to run.");
+            let child = cmd.spawn().expect("nix command failed to run.");
             let output = child.wait_with_output().expect("Could not wait command");
             if output.status.success() {
                 println!("{}", String::from_utf8_lossy(&output.stdout));
@@ -194,17 +206,20 @@ fn main() {
             }
         }
         Commands::Remove { packages } => {
-            let mut list_cmd = Command::new("nix");
-            list_cmd
-                .arg("profile")
+            let mut cmd = Command::new("nix");
+            cmd.arg("profile")
                 .arg("list")
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
                 .stdin(Stdio::null());
+            if is_teacher {
+                let string_cmd = command_as_string(&cmd);
+                println!("Learn mode on!");
+                println!("Nix command created:");
+                println!("\n\t{string_cmd}\n");
+            }
             println!("Checking installed packages...");
-            let out = list_cmd
-                .output()
-                .expect("`nix profile list` failed to run.");
+            let out = cmd.output().expect("`nix profile list` failed to run.");
             let found = String::from_utf8(out.stdout).expect("Failed to parse strings");
             let found_pkgs = found
                 .split("\n")
@@ -254,7 +269,12 @@ fn main() {
                         .collect::<Vec<&str>>();
                     let mut cmd = Command::new("nix");
                     cmd.arg("profile").arg("remove").args(&positions);
+                    if is_teacher {
+                        let string_cmd = command_as_string(&cmd);
 
+                        println!("Nix command created:");
+                        println!("\n\t{string_cmd}\n");
+                    }
                     let child = cmd.spawn().expect("nix command failed to run.");
                     let output = child.wait_with_output().expect("Could not wait command");
                     if output.status.success() {
@@ -278,6 +298,11 @@ fn main() {
                     let mut cmd = Command::new("nix");
                     cmd.arg("profile").arg("remove").args(&positions);
 
+                    if is_teacher {
+                        let string_cmd = command_as_string(&cmd);
+                        println!("Nix command created:");
+                        println!("\n\t{string_cmd}\n");
+                    }
                     let child = cmd.spawn().expect("nix command failed to run.");
                     let output = child.wait_with_output().expect("Could not wait command");
                     if output.status.success() {
@@ -303,16 +328,21 @@ fn main() {
             //         .collect::<Vec<String>>()
             // });
             let items = vec![".*".to_string()];
-            let mut child = Command::new("nix")
-                .arg("profile")
+            let mut cmd = Command::new("nix");
+            cmd.arg("profile")
                 .arg("upgrade")
                 .args(&items)
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
-                .stdin(Stdio::null())
-                .spawn()
-                .expect("nix command failed to run.");
+                .stdin(Stdio::null());
 
+            if is_teacher {
+                let string_cmd = command_as_string(&cmd);
+                println!("Learn mode on!");
+                println!("Nix command created:");
+                println!("\n\t{string_cmd}\n");
+            }
+            let mut child = cmd.spawn().expect("nix command failed to run.");
             let pb = ProgressBar::new_spinner();
             // let pkgs = packages
             //     .map_or(vec![".*".to_string()], |pkgs| {
@@ -338,14 +368,19 @@ fn main() {
             }
         }
         Commands::List => {
-            let mut list_cmd = Command::new("nix");
-            list_cmd
-                .arg("profile")
+            let mut cmd = Command::new("nix");
+            cmd.arg("profile")
                 .arg("list")
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())
                 .stdin(Stdio::null());
-            let output = list_cmd.output().expect("nix failed to run.");
+            if is_teacher {
+                let string_cmd = command_as_string(&cmd);
+                println!("Learn mode on!");
+                println!("Nix command created:");
+                println!("\n\t{string_cmd}\n");
+            }
+            let output = cmd.output().expect("nix failed to run.");
             if output.status.success() {
                 println!("{}", String::from_utf8_lossy(&output.stdout));
             } else {
@@ -353,6 +388,18 @@ fn main() {
             }
         }
     }
+}
+
+fn command_as_string(cmd: &Command) -> String {
+    let program = &cmd.get_program().to_string_lossy();
+    let args = &cmd
+        .get_args()
+        .into_iter()
+        .map(OsStr::to_string_lossy)
+        .collect::<Vec<Cow<str>>>()
+        .join(" ");
+
+    format!("{program} {args}")
 }
 
 #[cfg(test)]
