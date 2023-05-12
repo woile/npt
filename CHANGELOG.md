@@ -1,3 +1,9 @@
+## 0.5.0 (2023-05-12)
+
+### Feat
+
+- **install**: display packages when only repo is provided
+
 ## 0.4.1 (2023-05-12)
 
 ### Fix
