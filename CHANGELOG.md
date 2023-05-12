@@ -1,3 +1,9 @@
+## 0.4.1 (2023-05-12)
+
+### Fix
+
+- **install**: improve help with flake example
+
 ## 0.4.0 (2023-05-12)
 
 ### Feat
