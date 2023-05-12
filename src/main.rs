@@ -21,32 +21,32 @@ struct Cli {
 #[derive(Debug, Subcommand)]
 enum Commands {
     /// Install packages for the profile, if no repository provided, it defaults to nixpkgs
-    #[command(arg_required_else_help = true, alias = "i", )]
+    #[command(arg_required_else_help = true, visible_alias = "i", )]
     Install {
         /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
         packages: Vec<Package>,
     },
 
     /// List installed packages
-    #[command(alias = "ls")]
+    #[command(visible_alias = "ls")]
     List,
 
     /// Update all or specific packages
-    #[command(alias = "u")]
+    #[command(visible_alias = "u")]
     Upgrade,
     // {
     // /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
     // packages: Option<Vec<Package>>
     // },
     /// Find a package in the registry, if no repository provided, it defaults to nixpkgs
-    #[command(arg_required_else_help = true, alias = "s")]
+    #[command(arg_required_else_help = true, visible_alias = "s")]
     Search {
         /// Regex used to find the package. Examples: `nixpkgs#gnome3` or `gnome3`
         package: Package,
     },
 
     /// Remove one or more packages
-    #[command(arg_required_else_help = true, alias = "rm")]
+    #[command(arg_required_else_help = true, visible_alias = "rm")]
     Remove { packages: Vec<Package> },
 }
 

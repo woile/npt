@@ -37,11 +37,11 @@ Nix Package Tool
 Usage: npt [OPTIONS] <COMMAND>
 
 Commands:
-  install  Install packages for the profile, if no repository provided, it defaults to nixpkgs
-  list     List installed packages
-  upgrade  Update all or specific packages
-  search   Find a package in the registry, if no repository provided, it defaults to nixpkgs
-  remove   Remove one or more packages
+  install  Install packages for the profile, if no repository provided, it defaults to nixpkgs [aliases: i]
+  list     List installed packages [aliases: ls]
+  upgrade  Update all or specific packages [aliases: u]
+  search   Find a package in the registry, if no repository provided, it defaults to nixpkgs [aliases: s]
+  remove   Remove one or more packages [aliases: rm]
   help     Print this message or the help of the given subcommand(s)
 
 Options:
@@ -55,7 +55,6 @@ Options:
 - [ ] How to make search accept a repo only?
 - [ ] How to make search accept a regex?
 - [ ] Accept a package or expression in the List command
-- [ ] Improve help sections
 - [ ] Implement `update` command
 - [ ] provide compiled tar's to speed up flakes
 
