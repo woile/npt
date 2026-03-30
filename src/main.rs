@@ -38,7 +38,7 @@ enum Commands {
     /// `npt i github:nix-community/nurl#`
     #[command(arg_required_else_help = true, visible_alias = "i")]
     Install {
-        /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
+        /// Name of packages, optionally preceded by the repository#. Examples: `htop`, `nixpkgs#htop`
         packages: Vec<Package>,
     },
 
@@ -50,7 +50,7 @@ enum Commands {
     #[command(visible_alias = "u")]
     Upgrade,
     // {
-    // /// Name of packages, optionally preceeded by the repository#. Examples: `htop`, `nixpkgs#htop`
+    // /// Name of packages, optionally preceded by the repository#. Examples: `htop`, `nixpkgs#htop`
     // packages: Option<Vec<Package>>
     // },
     /// Find a package in the registry, if no repository provided, it defaults to nixpkgs
@@ -227,7 +227,7 @@ fn main() {
 
             let mut cmd = Command::new("nix");
             cmd.arg("profile")
-                .arg("install")
+                .arg("add")
                 .args(&packages)
                 .stdout(Stdio::piped())
                 .stderr(Stdio::piped())

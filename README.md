@@ -31,7 +31,7 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 ## Installation
 
 ```sh
-nix profile install 'github:woile/npt#npt'
+nix profile add 'github:woile/npt#npt'
 ```
 
 ## Usage
