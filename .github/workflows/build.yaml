@@ -1,7 +1,11 @@
 name: "Build legacy Nix package on Ubuntu"
 
 on:
-  push:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release"
+        required: true
 
 jobs:
   build:
@@ -13,6 +17,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.version }}
       - uses: cachix/install-nix-action@v31
       - uses: cachix/cachix-action@v16
         with:

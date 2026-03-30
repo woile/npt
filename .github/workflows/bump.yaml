@@ -1,0 +1,46 @@
+# YES, YOU CAN COPY-PASTE THIS ACTION AND IT SHOULD WORK
+# keep in mind, that it won't trigger other actions because it's using action permissions.
+# You can: use a PAT token or a workflow_call to trigger another action
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: commitizen-tools/setup-cz@main
+        with:
+          python-version: "3.x"
+      - id: bump-version
+        run: |
+          cz bump --yes --annotated-tag
+          git push --follow-tags
+          new_version="$(cz version -p)" # ATTENTION: You may have to add the v* at the beginning of the version
+          echo "new_version=$new_version" >> $GITHUB_OUTPUT
+      - name: Build changelog for Release
+        env:
+          NEW_VERSION: ${{ steps.bump-version.outputs.new_version }}
+        run: |
+          cz changelog --dry-run "${NEW_VERSION}" > .changelog.md
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: ".changelog.md"
+          tag_name: ${{ steps.bump-version.outputs.new_version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: trigger other workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run build.yaml \
+            -f "version=${{ steps.bump-version.outputs.new_version }}"
