@@ -20,7 +20,7 @@ jobs:
         with:
           ref: ${{ inputs.version }}
       - uses: cachix/install-nix-action@v31
-      - uses: cachix/cachix-action@v16
+      - uses: cachix/cachix-action@v17
         with:
           name: woile
           # If you chose API tokens for write access OR if you have a private cache
