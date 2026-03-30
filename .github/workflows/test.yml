@@ -1,0 +1,19 @@
+name: "Test nix builds"
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: cachix/install-nix-action@v31
+      - name: Build default package
+        run: |
+          nix build --no-link --print-out-paths
