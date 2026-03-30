@@ -1,3 +1,14 @@
+## 0.5.1 (2026-03-30)
+
+### Fix
+
+- **cargo**: update deps and edition
+- **ci**: add bump and build workflows
+- add result to .gitignore
+- update flake
+- add dependabot
+- move to `nix profile add`
+
 ## 0.5.0 (2023-05-12)
 
 ### Feat
