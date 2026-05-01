@@ -1,3 +1,9 @@
+## 0.5.2 (2026-05-01)
+
+### Fix
+
+- **cargo**: bump clap in the all-cargo-dependencies group
+
 ## 0.5.1 (2026-03-30)
 
 ### Fix
