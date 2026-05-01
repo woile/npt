@@ -32,7 +32,7 @@ jobs:
         run: |
           cz changelog --dry-run "${NEW_VERSION}" > .changelog.md
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body_path: ".changelog.md"
           tag_name: ${{ steps.bump-version.outputs.new_version }}
