@@ -1,3 +1,9 @@
+## 0.5.3 (2026-06-02)
+
+### Fix
+
+- **cargo**: bump serde_json in the all-cargo-dependencies group
+
 ## 0.5.2 (2026-05-01)
 
 ### Fix
