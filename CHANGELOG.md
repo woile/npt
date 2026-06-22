@@ -1,3 +1,9 @@
+## 0.5.4 (2026-06-22)
+
+### Fix
+
+- **cargo**: bump regex in the all-cargo-dependencies group
+
 ## 0.5.3 (2026-06-02)
 
 ### Fix
