@@ -1,3 +1,9 @@
+## 0.5.5 (2026-07-13)
+
+### Fix
+
+- **cargo**: bump indicatif in the all-cargo-dependencies group
+
 ## 0.5.4 (2026-06-22)
 
 ### Fix
