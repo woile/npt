@@ -1,3 +1,9 @@
+## 0.5.7 (2026-07-20)
+
+### Fix
+
+- **deps**: bump the all-actions-dependencies group across 1 directory with 2 updates
+
 ## 0.5.6 (2026-07-20)
 
 ### Fix
