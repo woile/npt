@@ -1,3 +1,9 @@
+## 0.5.8 (2026-07-27)
+
+### Fix
+
+- **cargo**: bump the all-cargo-dependencies group with 3 updates
+
 ## 0.5.7 (2026-07-20)
 
 ### Fix
