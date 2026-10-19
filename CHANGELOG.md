@@ -1,3 +1,9 @@
+## 0.5.9 (2026-10-19)
+
+### Fix
+
+- **deps**: bump cachix/install-nix-action
+
 ## 0.5.8 (2026-07-27)
 
 ### Fix
